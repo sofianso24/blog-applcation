@@ -7,8 +7,8 @@ import { postArticle,editArticle,deleteArticle,
 export  const articleRouter = Express.Router()
 
 articleRouter.post("/postArticle",postArticle)
-articleRouter.put("/editArticle",editArticle)
-articleRouter.delete("/deleteArticle",deleteArticle)
+articleRouter.patch("/editArticle/:id",editArticle)
+articleRouter.delete("/deleteArticle/:id",deleteArticle)
 articleRouter.get("/getArticles",getArticles)
 articleRouter.get("/getAnArticle/:id",getAnArticle)
 articleRouter.get("/filter",searchArticles)

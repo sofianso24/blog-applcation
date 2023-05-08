@@ -1,4 +1,4 @@
-import jwtPackage from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import { User } from "../models/user.js"
@@ -31,7 +31,7 @@ export const register = async (req, res) => {
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
   
-      res.status(201).json({ user: user._id, token });
+      res.status(201).json("wellcom to mentorlink");
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
@@ -63,7 +63,7 @@ export const register = async (req, res) => {
       
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
   
-      res.status(200).json({ user: user._id, token });
+      res.status(200).json("Logged in successfully");
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });

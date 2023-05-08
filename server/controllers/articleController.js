@@ -12,7 +12,8 @@ export const postArticle = async (req, res) => {
         const article = new Article({
           title: req.body.title,
           content: req.body.content,
-          author: req.user._id
+          author: req.body.author,
+          category: req.body.category
         });
     
         // Save the article to the database
@@ -29,31 +30,35 @@ export const postArticle = async (req, res) => {
 // edit article 
 
 export const editArticle = async (req, res) => {
-    try {
-        // Find the article by ID and the current user as the author
+  try {
+    // Find the article by ID and the current user as the author
 
-        const article = await Article.findOne({
-          _id: req.params.id,
-          author: req.user._id
-        });
-    
-        if (!article) {
-          return res.status(404).send({ error: "Article not found" });
-        }
-    
-        // Update the article with the new data
+    const article = await Article.findById(req.params.id);
+    if (!article) {
+      return res.status(404).send({ error: "Article not found" });
+    }
 
-        article.title = req.body.title || article.title;
-        article.content = req.body.content || article.content;
-    
-        // Save the updated article to the database
+    // Check if the user is authorized to edit the article
 
-        await article.save();
+    if (article.author.toString() !== req.user.id) {
+      return res.status(401).send({ error: "Unauthorized" });
+    }
+
+    // Update the article with the new data
+
+    article.title = req.body.title || article.title;
+    article.content = req.body.content || article.content;
+    article.category = req.body.category || article.category;
+
+    // Save the updated article to the database
     
-        res.send(article);
-      } catch (error) {
-        res.status(500).send({ error: "Unable to edit article" });
-      }
+    await article.save();
+
+    res.send(article);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Unable to edit article" });
+  }
 }
 
 // delete anarticle 
@@ -62,10 +67,7 @@ export const deleteArticle = async (req, res) => {
     try {
         // Find the article by ID and the current user as the author
 
-        const article = await Article.findOneAndDelete({
-          _id: req.params.id,
-          author: req.user._id
-        });
+        const article = await Article.findOneAndDelete(req.params.id );
     
         if (!article) {
           return res.status(404).send({ error: "Article not found" });
@@ -98,13 +100,14 @@ export const getAnArticle = async (req, res) => {
     try {
         // Find the article by ID and populate the author field with the user data
 
-        const article = await Article.findById(req.params.id).populate("author");
-    
+        const article = await Article.findById(req.params.id).populate("author")
+          
         if (!article) {
           return res.status(404).send({ error: "Article not found" });
         }
-    
+        
         res.send(article);
+        
       } catch (error) {
         res.status(500).send({ error: "Unable to retrieve article" });
       }

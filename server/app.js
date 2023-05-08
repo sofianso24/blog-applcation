@@ -28,5 +28,5 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/users",userRouter)
-app.use("/admins",articleRouter)
+app.use("/articles",articleRouter)
 
