@@ -31,7 +31,7 @@ export const register = async (req, res) => {
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
   
-      res.status(201).json("wellcom to mentorlink");
+      res.status(201).json("wellcom to blogify");
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
@@ -42,12 +42,14 @@ export const register = async (req, res) => {
 // log in 
 
  export const login = async (req, res) => {
+
     try {
       const { email, password } = req.body;
   
       // Check if the user exists
 
       const user = await User.findOne({ email });
+
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
@@ -65,6 +67,7 @@ export const register = async (req, res) => {
   
       res.status(200).json("Logged in successfully");
     } catch (error) {
+      console.log({error});
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
