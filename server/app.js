@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors"
+import cookieParser from "cookie-parser";
 
 import {userRouter} from "./routers/userRouter.js"
 import {articleRouter} from "./routers/articleRouter.js"
@@ -28,6 +29,7 @@ mongoose
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
 
 app.use("/users",userRouter)
 app.use("/articles",articleRouter)

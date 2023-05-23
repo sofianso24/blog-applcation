@@ -1,18 +1,20 @@
 
 import { User } from "../models/user.js"
 import { Article } from "../models/article.js"
+import { message } from "@pankod/refine";
 
 
 // post aticle
 
 export const postArticle = async (req, res) => {
+  const userId = res.locals.userId
     try {
         // Create a new article instance
 
         const article = new Article({
           title: req.body.title,
           content: req.body.content,
-          author: req.body.author,
+          author: userId,
           category: req.body.category
         });
     
@@ -29,39 +31,29 @@ export const postArticle = async (req, res) => {
 
 // edit article 
 
-export const editArticle = async (req, res) => {
+export const editArticle = async (req,res)=>{
+  const articleId = req.params.id
+  const {content,title,category} = req.body
+
   try {
-    // Find the article by ID and the current user as the author
-
-    const article = await Article.findById(req.params.id);
-    if (!article) {
-      return res.status(404).send({ error: "Article not found" });
-    }
-
-    // Check if the user is authorized to edit the article
-
-    if (article.author.toString() !== req.user.id) {
-      return res.status(401).send({ error: "Unauthorized" });
-    }
-
-    // Update the article with the new data
-
-    article.title = req.body.title || article.title;
-    article.content = req.body.content || article.content;
-    article.category = req.body.category || article.category;
-
-    // Save the updated article to the database
+    const article = await Article.findByIdAndUpdate(
+      articleId,
+      {title,content,category},
+      {new:true, useFindAndModify : false, returnDocument: "after"}
+    ) 
     
-    await article.save();
+if (!article){
+    return res.status(404).json({message: "article not found"})
+}   
 
-    res.send(article);
+res.json(article)
   } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: "Unable to edit article" });
+    console.error(error)
+    res.status(500).json({error:"unable to edit article"})
   }
 }
 
-// delete anarticle 
+// delete an article 
 
 export const deleteArticle = async (req, res) => {
     try {
@@ -100,7 +92,7 @@ export const getAnArticle = async (req, res) => {
     try {
         // Find the article by ID and populate the author field with the user data
 
-        const article = await Article.findById(req.params.id).populate("author")
+        const article = await Article.findById(req.params.id)
           
         if (!article) {
           return res.status(404).send({ error: "Article not found" });

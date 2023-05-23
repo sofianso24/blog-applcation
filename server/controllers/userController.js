@@ -64,8 +64,12 @@ export const register = async (req, res) => {
       // Generate a JWT token
       
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-  
-      res.status(200).json("Logged in successfully");
+
+       res.cookie("token",token,{httpOnly : true, secure : true, maxAge: 60*60*24*1000  })
+       
+ 
+       
+      res.status(200).json({message:"Logged in successfully",token})
     } catch (error) {
       console.log({error});
       console.error(error);
@@ -77,12 +81,8 @@ export const register = async (req, res) => {
 
   export const logout = async (req, res) => {
     try {
-        // Remove user's token from the database
-
-        req.user.tokens = req.user.tokens.filter(
-          (token) => token.token !== req.token
-        );
-        await req.user.save();
+        
+        res.clearCookie("token")
     
         res.send({ message: "Logged out successfully" });
       } catch (error) {
